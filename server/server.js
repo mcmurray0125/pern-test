@@ -30,7 +30,6 @@ app.get("/api/v1/restaurants", async (req, res) => {
 
 //Get one Restaurant
 app.get("/api/v1/restaurants/:id", async (req, res) => {
-    console.log(req.params.id);
 
     try {
         const restaurant = await db.query("select * from restaurants left join (select restaurant_id, COUNT(*), TRUNC(AVG(rating),1) as average_rating from reviews group by restaurant_id) reviews on restaurants.id = reviews.restaurant_id where id = $1;", [req.params.id]);
@@ -51,10 +50,9 @@ app.get("/api/v1/restaurants/:id", async (req, res) => {
 
 //Create a Restaurant
 app.post("/api/v1/restaurants", async (req, res) => {
-    console.log(req.body);
+
     try {
         const results = await db.query("INSERT INTO restaurants (name, location, price_range) values ($1, $2, $3) returning *", [req.body.name, req.body.location, req.body.price_range])
-        console.log(results);
         res.status(201).json({
             status: "success",
             data: {
@@ -71,8 +69,7 @@ app.post("/api/v1/restaurants", async (req, res) => {
 
 app.put("/api/v1/restaurants/:id", async (req, res) => {
     try {
-        const results = await db.query("UPDATE restaurants SET name = $1, location = $2, price_range = $3 where id = $4 returning *", [req.body.name, req.body.location, req.body.price_range, req.params.id])
-        console.log(results);
+        const results = await db.query("UPDATE restaurants SET name = $1, location = $2, price_range = $3 where id = $4 returning *", [req.body.name, req.body.location, req.body.price_range, req.params.id]);
         res.status(200).json({
             status: "success",
             data: {
@@ -101,7 +98,7 @@ app.delete("/api/v1/restaurants/:id", async (req, res) => {
 // Add Review
 app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
     try {
-        const newReview = await db.query('INSERT INTO reviews (restaurant_id, name, review, rating) values ($1, $2, $3, $4) returning *;', [req.params.id, req.body.name, req.body.review, req.body.rating])
+        const newReview = await db.query('INSERT INTO reviews (restaurant_id, name, review, rating) values ($1, $2, $3, $4) returning *;', [req.params.id, req.body.name, req.body.review, req.body.rating]);
         res.status(201).json({
             status: "success",
             data: {
@@ -113,7 +110,7 @@ app.post("/api/v1/restaurants/:id/addReview", async (req, res) => {
     }
 })
 
-const port = process.env.PORT || 5432;
+const port = process.env.PORT || 3100;
 app.listen(port, () => {
     console.log(`server is up and listening on port ${port}`);
 })
